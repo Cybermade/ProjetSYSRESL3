@@ -42,7 +42,7 @@ Init_Jeu()
     done
 }
 
-Destribuer_Cartes()
+Distribuer_Cartes()
 {
 nb_cartes_a_distribuer=0
 nb_joueur=0 
@@ -164,7 +164,7 @@ Verifier_Si_Round_Gagne()
         >round.en.cours
         >cartes.distruibuees.round
         echo "//">>toutes.les.cartes.posees
-        Destribuer_Cartes
+        Distribuer_Cartes
     #Sinon gagné
     else 
         echo "Gagné"
@@ -224,7 +224,7 @@ main()
     En_JEU=true
     Init_Jeu #Initialiser le jeu
     Random_Melange #Melanger les cartes
-    Destribuer_Cartes #Destribuer les cartes
+    Distribuer_Cartes #Distribuer les cartes
     while [ $En_JEU = true ]
     do
     trap 'Carte_Posee' USR2
