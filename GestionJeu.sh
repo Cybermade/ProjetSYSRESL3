@@ -149,7 +149,7 @@ Verifier_Si_Round_Gagne()
                 >cartes.distruibuees.round
                 >cartes.melangees
                 Random_Melange
-                Destribuer_Cartes
+                Distribuer_Cartes
             fi
 
 
