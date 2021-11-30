@@ -184,7 +184,7 @@ Verifier_Si_Round_Gagne()
 }
 Etablir_Classement()
 {
-    RatioPartie=`echo "scale=2;$((nbRound-1))/$nbJoueurs" | bc`
+    RatioPartie=`echo "$((nbRound-1))*$nbJoueurs" | bc`
     ligne=2
     while [ $ligne -le `awk 'END{print NR}' classement.joueurs` ]
     do
