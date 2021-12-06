@@ -25,18 +25,16 @@ Jouer()
     carteJouees=0
     while [ $carteJouees -lt $nbCartes ]
     do
-    clear;
     echo "Veuillez choisir une carte entre ${MesCartes[*]}" 
     read choixCarte
     #Verifier qu'il veut jouer une carte qu'il posséde
     while [[ ! " ${MesCartes[*]} " =~ " ${choixCarte} " ]]
     do
-    clear;
     echo "Vous ne possédez pas cette carte veuillez rechoisir entre ${MesCartes[*]}"
     read choixCarte
     done
     ((carteJouees=carteJouees+1))
-    echo "$choixCarte" >> round.en.cours
+    echo "$NomJoueur $choixCarte" >> round.en.cours
     kill -s USR2 $pidGestionJeu
     pos=0
     
@@ -56,7 +54,7 @@ Jouer()
 
 main()
 {
-    trap 'printf "Cartes Jouées round :";awk '"'"'{printf "%s"" ",$0}END{printf "\n"}'"'"' round.en.cours' USR2
+    trap 'echo "Cartes Jouées round :";awk '"'"'{print}'"'"' round.en.cours' USR2
     Init_Joueur
     trap 'Recuperation_Carte' USR1
     while true; do

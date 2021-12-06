@@ -31,6 +31,7 @@ Init_Jeu()
     echo $$ > gestion.jeu.pid
     inscrit=0
     read nbJoueurs
+    echo "En attente de l'inscription des joueurs..."
     NBCartesJouees=0
     trap 'arrayNames[$inscrit]=`awk -v ainscrit=$inscrit '"'"'NR==ainscrit+1{print $1}'"'"' inscrit.noms`;
     pidNames[inscrit]=`awk -v ainscrit=$inscrit '"'"'NR==ainscrit+1{print $2}'"'"' inscrit.noms`;
@@ -42,7 +43,7 @@ Init_Jeu()
     done
 }
 
-Destribuer_Cartes()
+Distribuer_Cartes()
 {
 nb_cartes_a_distribuer=0
 nb_joueur=0 
@@ -89,7 +90,8 @@ Carte_Posee()
 {   #Rajouter la dernière carte posée dans la liste de toutes les cartes posees
     awk 'END{print $0}' round.en.cours >> toutes.les.cartes.posees
     #Afficher toutes les cartes posees par round
-    clear;printf "Cartes Jouèes en tout :";awk '{printf "%s"" ",$0}END{printf "\n"}' toutes.les.cartes.posees
+    #clear;printf "Cartes Jouèes en tout :";awk '{printf "%s"" ",$0}END{printf "\n"}' toutes.les.cartes.posees
+    clear;echo "Cartes Jouèes en tout :";awk '{print}END{printf "\n"}' toutes.les.cartes.posees
     nb_joueur=0
     #Envoyer un signal à tous les joueurs pour leurs indiquer qu'une carte a été posée
     while [ $nb_joueur -lt $nbJoueurs ]
@@ -115,7 +117,7 @@ Verifier_Si_Round_Gagne()
     #Verifier si toutes les cartes posees durant le round sont par ordre croissant
     while [ ! $i -gt `awk 'END{print NR}' round.en.cours` ]
     do
-        if [ `awk -v var=$i '(NR==var-1){print $0}' round.en.cours` -gt `awk -v var=$i '(NR==var){print $0}' round.en.cours` ]
+        if [ `awk -v var=$i '(NR==var-1){print $2}' round.en.cours` -gt `awk -v var=$i '(NR==var){print $2}' round.en.cours` ]
             then
             Etablir_Classement
             echo "Perdu...Renitialisation"
@@ -149,7 +151,7 @@ Verifier_Si_Round_Gagne()
                 >cartes.distruibuees.round
                 >cartes.melangees
                 Random_Melange
-                Destribuer_Cartes
+                Distribuer_Cartes
             fi
 
 
@@ -164,7 +166,7 @@ Verifier_Si_Round_Gagne()
         >round.en.cours
         >cartes.distruibuees.round
         echo "//">>toutes.les.cartes.posees
-        Destribuer_Cartes
+        Distribuer_Cartes
     #Sinon gagné
     else 
         echo "Gagné"
@@ -184,7 +186,7 @@ Verifier_Si_Round_Gagne()
 }
 Etablir_Classement()
 {
-    RatioPartie=`echo "scale=2;$((nbRound-1))/$nbJoueurs" | bc`
+    RatioPartie=`echo "scale=2;$((nbRound-1))*$nbJoueurs" | bc`
     ligne=2
     while [ $ligne -le `awk 'END{print NR}' classement.joueurs` ]
     do
@@ -192,7 +194,7 @@ Etablir_Classement()
         Ratio[$((ligne-2))]=`awk -v var=$ligne '(NR==var){print $15}' classement.joueurs`
         ((ligne=ligne+1))
     done
-    printf "\t\t\t\t\t\t\t\tTOP10 Joueurs/rounds\n" > classement.joueurs
+    printf "\t\tTOP10 Joueurs/rounds:\n" > classement.joueurs
     Ratio[${#Ratio[@]}]=$RatioPartie
     i=0
     RatioTries=($(for l in ${Ratio[@]}; do echo $l; done | sort -r -n));unset Ratio
@@ -224,7 +226,7 @@ main()
     En_JEU=true
     Init_Jeu #Initialiser le jeu
     Random_Melange #Melanger les cartes
-    Destribuer_Cartes #Destribuer les cartes
+    Distribuer_Cartes #Destribuer les cartes
     while [ $En_JEU = true ]
     do
     trap 'Carte_Posee' USR2
@@ -242,22 +244,3 @@ main()
 }
 
 main
-
-# Init_Cartes()
-# {
-
-#     i=1
-#     while [ $i -lt 101 ]
-#     do
-#     echo $i>>cartes.restantes
-#     ((i=i+1))
-#     done
-
-# }
-# Init_Cartes
-# # read DONE
-# # while [ "$DONE" != salut ]
-# # do
-# # read DONE
-# # done
-# echo "hello" 

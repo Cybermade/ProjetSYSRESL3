@@ -30,16 +30,11 @@ Jouer()
     echo "Veuillez choisir une carte entre ${MesCartes[*]}" 
     MesCartesTriees=($(for l in ${MesCartes[@]}; do echo $l; done | sort -n))
     choixCarte=${MesCartesTriees[0]}
-    # #Verifier qu'il veut jouer une carte qu'il posséde
-    # while [[ ! " ${MesCartes[*]} " =~ " ${choixCarte} " ]]
-    # do
-    # echo "Vous ne possédez pas cette carte veuillez rechoisir entre ${MesCartes[*]}"
-    # read choixCarte
-    # done
+
     ((carteJouees=carteJouees+1))
     a=`echo "e($choixCarte/24)" | bc -l`
-    sleep `echo "scale=5;$a" | bc`
-    echo "$choixCarte" >> round.en.cours
+    sleep `echo "scale=5;$a/1.5" | bc`
+    echo "$NameRobot $choixCarte" >> round.en.cours
     kill -s USR2 $pidGestionJeu
     pos=0
     
@@ -55,9 +50,10 @@ Jouer()
     
 
 }
+
 main()
 {
-    trap 'printf "Cartes Jouées round :";awk '"'"'{printf "%s"" ",$0}END{printf "\n"}'"'"' round.en.cours' USR2
+    trap 'echo "Cartes Jouées round :";awk '"'"'{print}'"'"' round.en.cours' USR2
     Init_Robot
     trap 'Recuperation_Carte' USR1
     while true; do
