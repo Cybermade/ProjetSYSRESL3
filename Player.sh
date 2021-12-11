@@ -23,14 +23,16 @@ Recuperation_Carte()
 Jouer()
 {   
     carteJouees=0
+    choixCarte=-1
     while [ $carteJouees -lt $nbCartes ]
     do
+    clear;
     echo "Veuillez choisir une carte entre ${MesCartes[*]}" 
     read choixCarte
     #Verifier qu'il veut jouer une carte qu'il posséde
     while [[ ! " ${MesCartes[*]} " =~ " ${choixCarte} " ]]
     do
-    echo "Vous ne possédez pas cette carte veuillez rechoisir entre ${MesCartes[*]}"
+    echo "Vous ne possédez pas cette carte veuillez rechoisir une carte entre : ${MesCartes[*]}"
     read choixCarte
     done
     ((carteJouees=carteJouees+1))
@@ -46,15 +48,31 @@ Jouer()
         unset 'MesCartes[$pos]' #Enlever la carte jouée
     fi
     done
-    echo "Vous avez joué toutes vos cartes, Veuillez attendre la fin du round"
+    
 
     
 
 }
+Affichage()
+{
+    clear;
+    if [ "`awk '(NR==1){print}' round.en.cours`" != "Gagné" ] && [ "`awk '(NR==1){print}' round.en.cours`" != "Perdu...Renitialisation" ];then
+        echo "Cartes Jouées round :";awk '{print}' round.en.cours  
+        if [ ${#MesCartes[@]} -eq 0 ];then
+            echo "Vous avez joué toutes vos cartes, Veuillez attendre la fin du round" 
+        else 
+            echo "Veuillez choisir une carte entre ${MesCartes[*]}"
+        fi
+
+    else
+        awk '{print}' round.en.cours
+    fi
+    
+}
 
 main()
 {
-    trap 'echo "Cartes Jouées round :";awk '"'"'{print}'"'"' round.en.cours' USR2
+    trap 'Affichage' USR2
     Init_Joueur
     trap 'Recuperation_Carte' USR1
     while true; do
