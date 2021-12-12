@@ -101,11 +101,13 @@ Carte_Posee()
     done
     #Fin du round si toutes les cartes du round ont été posées
     #Ou Si toutes les cartes ont été posées (les 100 cartes)
-    #On doit faire la double vérification au cas ou l
+    #On doit faire la double vérification au cas ou à la fin un joueur
+    #ne recoit pas le même nombre de carte que les autres
+    #au cas ou il ny ai plus...
     if [ `awk 'END{print NR}' round.en.cours` == $(($nbRound*$nbJoueurs)) ] || \
-    [ `awk 'BEGIN{a=0}/^[0-9]/{a++}END{print a}' toutes.les.cartes.posees` == 100 ]
+    [ `awk 'BEGIN{a=0}/[0-9]/{a++}END{print a}' toutes.les.cartes.posees` == 100 ]
     then
-        a=`awk 'BEGIN{a=0}/^[0-9]/{a++}END{print a}' toutes.les.cartes.posees`
+        a=`awk 'BEGIN{a=0}/[0-9]/{a++}END{print a}' toutes.les.cartes.posees`
         echo "R : $nbRound, C : $a"
         Verifier_Si_Round_Gagne
     fi
